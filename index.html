@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#070707">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Ascension">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+  <title>Ascension</title>
+  <style>
+    :root{
+      --bg:#070707;--panel:#101010;--panel2:#151515;--text:#f5f2e9;
+      --muted:#918c82;--gold:#d5ae5b;--gold2:#f0d58c;--border:#29261f;
+      --danger:#dba49c;
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{margin:0;background:var(--bg);color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+    body{min-height:100dvh;touch-action:manipulation}
+    button,input{font:inherit}
+    button{touch-action:manipulation}
+    .app{max-width:760px;margin:0 auto;
+      padding:calc(18px + env(safe-area-inset-top)) 14px calc(92px + env(safe-area-inset-bottom))}
+    .top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:18px}
+    .brand{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+    h1{font-size:27px;line-height:1.05;margin:4px 0 0;letter-spacing:-.035em}
+    .date{font-size:12px;color:var(--muted);text-align:right}
+    .pill{display:inline-flex;align-items:center;gap:7px;border:1px solid #4a402a;
+      background:#14120d;color:var(--gold2);border-radius:999px;padding:7px 10px;
+      font-size:12px;font-weight:750;white-space:nowrap}
+    .dot{width:7px;height:7px;border-radius:50%;background:var(--gold)}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:15px;margin-bottom:12px}
+    .head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .head h2{font-size:16px;margin:0}
+    .subtle{font-size:12px;color:var(--muted)}
+    .tasks{display:grid;gap:9px}
+    .task{position:relative;display:grid;grid-template-columns:30px minmax(0,1fr) auto;
+      align-items:center;gap:12px;min-height:58px;border:1px solid #2a2721;
+      background:var(--panel2);border-radius:16px;padding:13px 12px;
+      user-select:none;-webkit-user-select:none;cursor:pointer}
+    .task.done{background:#211d13;border-color:#5e4f2c}
+    .task input{position:absolute;opacity:0;pointer-events:none}
+    .check{width:24px;height:24px;border-radius:8px;border:1.5px solid #5d574b;
+      display:flex;align-items:center;justify-content:center;color:#101010;font-weight:900}
+    .task.done .check{background:var(--gold2);border-color:var(--gold2)}
+    .task-name{font-size:15px;font-weight:720;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .task-week{font-size:12px;color:var(--gold2);font-weight:750;white-space:nowrap}
+    .big{font-size:42px;font-weight:820;letter-spacing:-.05em;color:var(--gold2)}
+    .progress{height:10px;background:#24211b;border-radius:999px;overflow:hidden}
+    .progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold2))}
+    .week-nav{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .nav-arrow{width:44px;height:44px;border-radius:13px;border:1px solid #3f3829;
+      background:#111;color:var(--gold2);font-size:20px;font-weight:800}
+    .nav-arrow:disabled{opacity:.25}
+    .weeklist{display:grid;gap:10px}
+    .weekitem{border:1px solid #2a2721;background:var(--panel2);border-radius:16px;padding:12px}
+    .weekrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .weekname{font-size:14px;font-weight:720}
+    .weektotal{font-size:12px;color:var(--gold2);font-weight:800}
+    .days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:10px}
+    .day{min-width:0;height:36px;border-radius:10px;border:1px solid #302c24;background:#0f0f0f;
+      color:var(--muted);font-size:12px;font-weight:700}
+    .day.on{background:#2e291c;border-color:#6e5c31;color:var(--gold2)}
+    .day:disabled{opacity:.22}
+    .kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+    .kpi{border:1px solid #2a2721;background:var(--panel2);border-radius:16px;padding:12px}
+    .kpilabel{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+    .kpivalue{font-size:23px;font-weight:820;margin-top:4px}
+    .setting{border:1px solid #2a2721;background:var(--panel2);border-radius:16px;padding:12px;margin-bottom:9px}
+    .setting.archived{opacity:.58}
+    .fields{display:grid;grid-template-columns:64px minmax(0,1fr) 76px;gap:8px}
+    .field{width:100%;min-width:0;border:1px solid #383328;background:#0c0c0c;color:var(--text);
+      border-radius:11px;padding:10px 9px;outline:none;font-size:16px}
+    .field.num{text-align:center}
+    .setting-actions{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:9px}
+    .status{font-size:11px;color:var(--muted)}
+    .btn{border:1px solid #4b412b;background:#15120c;color:var(--gold2);
+      border-radius:11px;padding:9px 11px;font-weight:750}
+    .btn.danger{border-color:#49302c;color:var(--danger);background:#160e0d}
+    .add{width:100%;border:1px dashed #544829;background:#0e0e0e;color:var(--gold2);
+      border-radius:14px;padding:12px;font-weight:780}
+    .backup-row{display:flex;gap:8px;flex-wrap:wrap}
+    .backup-info{font-size:12px;color:var(--muted);margin-top:10px}
+    .reminders{display:flex;gap:8px;flex-wrap:wrap}
+    .reminder{border:1px solid #3a3428;background:#0f0f0f;border-radius:999px;padding:7px 10px;font-size:12px}
+    .view{display:none}.view.active{display:block}
+    .bottom{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(760px,100%);
+      padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:rgba(7,7,7,.94);
+      backdrop-filter:blur(16px);border-top:1px solid var(--border);
+      display:grid;grid-template-columns:repeat(3,1fr);gap:8px;z-index:20}
+    .bottom button{border:0;background:transparent;color:var(--muted);padding:11px 6px;border-radius:13px;font-size:12px;font-weight:780}
+    .bottom button.active{background:#1b1812;color:var(--gold2)}
+    .empty{padding:18px 4px;text-align:center;color:var(--muted);font-size:13px}
+    input[type=file]{display:none}
+    @media(max-width:420px){
+      .top{align-items:flex-start;flex-direction:column}
+      .date{text-align:left}
+      h1{font-size:24px}
+      .fields{grid-template-columns:58px minmax(0,1fr) 68px}
+    }
+  </style>
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <div><div class="brand">Ascension Souveraine</div><h1>Dashboard</h1></div>
+    <div>
+      <div id="dateLabel" class="date"></div>
+      <div style="height:7px"></div>
+      <div class="pill"><span class="dot"></span><span id="headerScore">Semaine 0%</span></div>
+    </div>
+  </header>
+
+  <section id="viewToday" class="view active">
+    <div class="card">
+      <div class="head"><h2>Aujourd’hui</h2><div id="todayCount" class="subtle">0 validé</div></div>
+      <div id="taskList" class="tasks"></div>
+    </div>
+  </section>
+
+  <section id="viewWeek" class="view">
+    <div class="card">
+      <div class="week-nav">
+        <button id="prevWeek" class="nav-arrow" type="button" aria-label="Semaine précédente">‹</button>
+        <div style="text-align:center">
+          <div class="subtle">Productivité</div>
+          <div id="weekScore" class="big">0%</div>
+          <div id="weekRange" class="subtle"></div>
+        </div>
+        <button id="nextWeek" class="nav-arrow" type="button" aria-label="Semaine suivante">›</button>
+      </div>
+      <div class="progress" style="margin-top:12px"><span id="weekFill"></span></div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><div class="kpilabel">Validations utiles</div><div id="doneKpi" class="kpivalue">0</div></div>
+      <div class="kpi"><div class="kpilabel">Objectif total</div><div id="goalKpi" class="kpivalue">0</div></div>
+    </div>
+    <div id="weekList" class="weeklist"></div>
+  </section>
+
+  <section id="viewSettings" class="view">
+    <div class="card">
+      <div class="head"><h2>Objectifs</h2><div class="subtle">emoji · nom · /semaine</div></div>
+      <div id="settingsList"></div>
+      <button id="addGoal" class="add" type="button">+ Ajouter un objectif</button>
+    </div>
+
+    <div class="card">
+      <div class="head"><h2>Rappels</h2><div class="subtle">ChatGPT</div></div>
+      <div class="reminders">
+        <span class="reminder">08:00</span><span class="reminder">14:00</span><span class="reminder">20:00</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="head"><h2>Sauvegarde</h2></div>
+      <div class="backup-row">
+        <button id="exportBtn" class="btn" type="button">Exporter JSON</button>
+        <button id="importBtn" class="btn" type="button">Importer JSON</button>
+        <input id="importFile" type="file" accept="application/json,.json">
+      </div>
+      <div id="backupInfo" class="backup-info">Dernière sauvegarde : jamais</div>
+    </div>
+  </section>
+</main>
+
+<nav class="bottom" aria-label="Navigation">
+  <button class="active" data-view="Today" type="button">Aujourd’hui</button>
+  <button data-view="Week" type="button">Semaine</button>
+  <button data-view="Settings" type="button">Réglages</button>
+</nav>
+
+<script src="./app.js"></script>
+</body>
+</html>
